@@ -141,11 +141,10 @@ map ::
   (a -> b)
   -> List a
   -> List b
-map _ Nil = Nil
-map f (x :. Nil) = (f x) :. Nil
-map f (x :. xs) = (f x) :. (map f xs)
-
---map' f = foldRight (\a acc -> f a :. acc) Nil
+-- map _ Nil = Nil
+-- map f (x :. Nil) = (f x) :. Nil
+-- map f (x :. xs) = (f x) :. (map f xs)
+map f = foldRight (\a acc -> f a :. acc) Nil
 
 -- | Return elements satisfying the given predicate.
 --
@@ -161,12 +160,14 @@ filter ::
   (a -> Bool)
   -> List a
   -> List a
-filter _ Nil = Nil
-filter f (x :. xs) =
-  if f x then
-    x :. (filter f xs)
-  else
-    filter f xs
+-- filter _ Nil = Nil
+-- filter f (x :. xs) =
+--   if f x then
+--     x :. (filter f xs)
+--   else
+--     filter f xs
+
+filter f = foldRight (\x acc -> if f x then x :. acc else acc) Nil
 
 -- | Append two lists to a new list.
 --
