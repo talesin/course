@@ -256,8 +256,26 @@ flattenAgain = flatMap id
 seqOptional ::
   List (Optional a)
   -> Optional (List a)
-seqOptional =
-  error "todo: Course.List#seqOptional"
+-- seqOptional =
+--   foldRight (\x acc ->
+--     case (x, acc) of
+--       (Full y, Full ys)       -> Full (y :. ys)
+--       (_, Empty)              -> Empty
+--       (Empty, _)              -> Empty) (Full Nil)
+
+-- seqOptional =
+--   foldLeft (\acc x ->
+--     case (x, acc) of
+--       (Full y, Full ys)       -> Full (ys ++ (y :. Nil))
+--       (_, Empty)              -> Empty
+--       (Empty, _)              -> Empty) (Full Nil)
+
+seqOptional Nil = Full Nil
+seqOptional (Empty :. _) = Empty
+seqOptional (Full x :. os) =
+  case seqOptional os of
+    Full xs   -> Full (x :. xs)
+    Empty     -> Empty
 
 -- | Find the first element in the list matching the predicate.
 --
@@ -279,8 +297,8 @@ find ::
   (a -> Bool)
   -> List a
   -> Optional a
-find =
-  error "todo: Course.List#find"
+find _ Nil = Empty
+find f (x :. xs) = if f x then Full x else find f xs
 
 -- | Determine if the length of the given list is greater than 4.
 --
@@ -298,8 +316,9 @@ find =
 lengthGT4 ::
   List a
   -> Bool
-lengthGT4 =
-  error "todo: Course.List#lengthGT4"
+lengthGT4 Nil = False
+lengthGT4 (_ :. _ :. _ :. _ :. _ :. _) = True
+lengthGT4 _ = False
 
 -- | Reverse a list.
 --
@@ -315,8 +334,7 @@ lengthGT4 =
 reverse ::
   List a
   -> List a
-reverse =
-  error "todo: Course.List#reverse"
+reverse = foldLeft (\acc x -> x :. acc) Nil
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
@@ -330,8 +348,7 @@ produce ::
   (a -> a)
   -> a
   -> List a
-produce =
-  error "todo: Course.List#produce"
+produce f x = x :. (produce f (f x))
 
 -- | Do anything other than reverse a list.
 -- Is it even possible?
@@ -345,8 +362,8 @@ produce =
 notReverse ::
   List a
   -> List a
-notReverse =
-  error "todo: Is it even possible?"
+notReverse Nil = Nil
+notReverse xs = xs
 
 ---- End of list exercises
 
