@@ -362,8 +362,8 @@ produce f x = x :. (produce f (f x))
 notReverse ::
   List a
   -> List a
-notReverse Nil = Nil
-notReverse xs = xs
+notReverse (x :. Nil) = (x :. Nil)
+notReverse _ = Nil
 
 ---- End of list exercises
 
