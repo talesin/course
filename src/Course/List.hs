@@ -334,7 +334,7 @@ lengthGT4 _ = False
 reverse ::
   List a
   -> List a
-reverse = foldLeft (\acc x -> x :. acc) Nil
+reverse = foldLeft (flip (:.)) Nil
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
@@ -348,7 +348,7 @@ produce ::
   (a -> a)
   -> a
   -> List a
-produce f x = x :. (produce f (f x))
+produce f x = x :. produce f (f x)
 
 -- | Do anything other than reverse a list.
 -- Is it even possible?
@@ -362,8 +362,7 @@ produce f x = x :. (produce f (f x))
 notReverse ::
   List a
   -> List a
-notReverse (x :. Nil) = (x :. Nil)
-notReverse _ = Nil
+notReverse = reverse
 
 ---- End of list exercises
 
