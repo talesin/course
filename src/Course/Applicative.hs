@@ -19,7 +19,7 @@ module Course.Applicative(
 ) where
 
 import Course.Core
-import Course.Functor
+import qualified Course.Functor as F
 import Course.Id
 import Course.List
 import Course.Optional
@@ -36,7 +36,7 @@ import qualified Prelude as P
 --
 -- * The law of right identity
 --   `∀x. x <*> pure id ≅ x`
-class Functor f => Applicative f where
+class F.Functor f => Applicative f where
   pure ::
     a -> f a
   (<*>) ::
@@ -61,8 +61,7 @@ infixl 4 <*>
   (a -> b)
   -> f a
   -> f b
-(<$>) =
-  error "todo: Course.Applicative#(<$>)"
+(<$>) f a = pure f <*> a
 
 -- | Insert into Id.
 --
@@ -74,14 +73,13 @@ instance Applicative Id where
   pure ::
     a
     -> Id a
-  pure =
-    error "todo: Course.Applicative pure#instance Id"
-  (<*>) :: 
+  pure = Id
+
+  (<*>) ::
     Id (a -> b)
     -> Id a
     -> Id b
-  (<*>) =
-    error "todo: Course.Applicative (<*>)#instance Id"
+  (<*>) (Id f) (Id a) = Id (f a)
 
 -- | Insert into a List.
 --
@@ -93,14 +91,13 @@ instance Applicative List where
   pure ::
     a
     -> List a
-  pure =
-    error "todo: Course.Applicative pure#instance List"
+  pure a = a :. Nil
+
   (<*>) ::
     List (a -> b)
     -> List a
     -> List b
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance List"
+  (<*>) fs xs = flatMap (`map` xs) fs
 
 -- | Insert into an Optional.
 --
@@ -118,14 +115,13 @@ instance Applicative Optional where
   pure ::
     a
     -> Optional a
-  pure =
-    error "todo: Course.Applicative pure#instance Optional"
+  pure = Full
+
   (<*>) ::
     Optional (a -> b)
     -> Optional a
     -> Optional b
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance Optional"
+  (<*>) = applyOptional
 
 -- | Insert into a constant function.
 --
@@ -148,13 +144,13 @@ instance Applicative Optional where
 instance Applicative ((->) t) where
   pure ::
     a
-    -> ((->) t a)
-  pure =
-    error "todo: Course.Applicative pure#((->) t)"
+    -> (->) t a
+  pure = const
+
   (<*>) ::
-    ((->) t (a -> b))
-    -> ((->) t a)
-    -> ((->) t b)
+    (->) t (a -> b)
+    -> (->) t a
+    -> (->) t b
   (<*>) =
     error "todo: Course.Apply (<*>)#instance ((->) t)"
 
