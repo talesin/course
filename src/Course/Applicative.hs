@@ -153,6 +153,7 @@ instance Applicative ((->) t) where
     -> (->) t b
   (<*>) f g t = f t (g t)
 
+
 -- | Apply a binary function in the environment.
 --
 -- >>> lift2 (+) (Id 7) (Id 8)
@@ -319,8 +320,9 @@ sequence ::
   Applicative f =>
   List (f a)
   -> f (List a)
-sequence =
-  error "todo: Course.Applicative#sequence"
+sequence = foldRight (lift2 (:.)) (pure Nil)
+--sequence = foldRight (\x acc -> lift2 (:.) x acc) (pure Nil)
+--sequence = foldRight (\x acc -> ((:.) <$> x) <*> acc) (pure Nil)
 
 -- | Replicate an effect a given number of times.
 --
@@ -343,8 +345,8 @@ replicateA ::
   Int
   -> f a
   -> f (List a)
-replicateA =
-  error "todo: Course.Applicative#replicateA"
+--replicateA n fa = sequence $ replicate n fa
+replicateA n = sequence . replicate n
 
 -- | Filter a list with a predicate that produces an effect.
 --
@@ -371,8 +373,8 @@ filtering ::
   (a -> f Bool)
   -> List a
   -> f (List a)
-filtering =
-  error "todo: Course.Applicative#filtering"
+filtering f = foldRight (\a -> lift2 (\b -> if b then (a :.) else id) (f a)) (pure Nil)
+
 
 -----------------------
 -- SUPPORT LIBRARIES --
