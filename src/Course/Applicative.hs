@@ -373,7 +373,22 @@ filtering ::
   (a -> f Bool)
   -> List a
   -> f (List a)
-filtering f = foldRight (\a -> lift2 (\b -> if b then (a :.) else id) (f a)) (pure Nil)
+--filtering f = foldRight (\a -> lift2 (\b -> if b then (a :.) else id) (f a)) (pure Nil)
+
+filtering fn = foldRight folder (pure Nil)
+  where
+    folder a acc = appender <$> fn a
+                            <*> pure a
+                            <*> acc
+    appender b a acc = if b then a :. acc else acc
+
+
+{-
+foldRight :: (a -> b -> b) -> b -> List a -> b
+pure :: a -> f a
+(<$>) :: (a -> b) -> f a -> f b
+(<*>) :: f (a -> b) -> f a -> f b
+-}
 
 
 -----------------------
